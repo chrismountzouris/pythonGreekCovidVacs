@@ -5,6 +5,8 @@ import json
 
 import datetime
 
+from itertools import groupby
+
 # Initialize variables
 def jprint(obj):
 
@@ -38,6 +40,12 @@ total_distinct_vacs = 0
 
 total_non_distinct_vacs = 0
 
+datesArray = []
+
+total_distinct_vac_Array = []
+
+total_non_distinct_vacs_Array = []
+
 # Request JSON object and turn it into a Python dictionary
 vacs_json = get_vacs_json()
 
@@ -49,6 +57,26 @@ loaded_json = jload(vacs_json)
 now = datetime.date.today() - datetime.timedelta(1)
 
 time_compare_string = now.strftime("%Y-%m-%d") + 'T00:00:00'
+
+loaded_json.sort(key=lambda content: content['referencedate'])
+
+# then use groupby with the same key
+groups = groupby(loaded_json, lambda content: content['referencedate'])
+
+# Group data by reference date in order to iterate through areas over a single day
+for refDate, group in groups:
+    
+    datesArray.append(refDate)
+    
+    temp_distinct = 0
+    temp_non_distinct = 0
+    for content in group:
+        
+        temp_distinct = temp_distinct + int(content['totaldistinctpersons'])
+        temp_non_distinct = temp_non_distinct + int(content['totalvaccinations'])
+
+    total_distinct_vac_Array.append(temp_distinct)
+    total_non_distinct_vacs_Array.append(temp_non_distinct)
 
 # Iterate through dictionary and perform actions on the last day's data
 for key in loaded_json:
