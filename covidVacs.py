@@ -82,6 +82,10 @@ total_distinct_vacs = 0
 
 total_non_distinct_vacs = 0
 
+alt_total_distinct_vacs = 0
+
+alt_total_non_distinct_vacs = 0
+
 datesArray = []
 
 total_distinct_vac_Array = []
@@ -98,7 +102,11 @@ loaded_json = jload(vacs_json)
 # Get previous day string
 now = datetime.date.today() - datetime.timedelta(1)
 
+alt_now = now = datetime.date.today() - datetime.timedelta(2)
+
 time_compare_string = now.strftime("%Y-%m-%d") + 'T00:00:00'
+
+alternative_compare_string = alt_now.strftime("%Y-%m-%d") + 'T00:00:00'
 
 loaded_json.sort(key=lambda content: content['referencedate'])
 
@@ -125,15 +133,29 @@ for refDate, group in groups:
 # Iterate through dictionary and perform actions on the last day's data
 for key in loaded_json:
     
-    if (key['referencedate'] == time_compare_string):
+    if (key['referencedate'] == time_compare_string):    
         
         total_distinct_vacs = total_distinct_vacs + int(key['totaldistinctpersons'])
 
         total_non_distinct_vacs = total_non_distinct_vacs + int(key['totalvaccinations'])
 
-print ("Total distinct vaccinations are :",total_distinct_vacs)
+    if (key['referencedate'] == alternative_compare_string):    
+        
+        alt_total_distinct_vacs = total_distinct_vacs + int(key['totaldistinctpersons'])
 
-print ("Total vaccinations are :",total_non_distinct_vacs)
+        alt_total_non_distinct_vacs = total_non_distinct_vacs + int(key['totalvaccinations'])
+
+if (total_distinct_vacs == 0 or total_non_distinct_vacs == 0):
+
+    print ("Total distinct vaccinations are :",alt_total_distinct_vacs," Last Update on:",alternative_compare_string)
+
+    print ("Total vaccinations are :",alt_total_non_distinct_vacs," Last Update on:",alternative_compare_string)
+
+else :
+
+    print ("Total distinct vaccinations are :",total_distinct_vacs," Last Update on:",time_compare_string)
+
+    print ("Total vaccinations are :",total_non_distinct_vacs," Last Update on:",time_compare_string)
 
 # Show line chart with distinct vaccinations in Greece
 distinct_plot(datesArray, total_distinct_vac_Array)
