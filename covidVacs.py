@@ -7,6 +7,8 @@ import datetime
 
 from itertools import groupby
 
+import matplotlib.pyplot as plt
+
 # Initialize variables
 def jprint(obj):
 
@@ -34,6 +36,46 @@ def get_vacs_json():
         print ("Unsuccessful Request with error code :",response.status_code)
 
         return None
+
+def distinct_plot(datesArray, total_distinct_vac_Array):
+
+    plt.rcParams.update({'font.size': 8})
+
+    plt.figure(figsize=(7,7))
+
+    plt.plot(datesArray, total_distinct_vac_Array)
+
+    plt.title('COVID-19 Distinct Vaccinations | Greece')
+
+    plt.xlabel('Date')
+
+    plt.xticks(rotation=90)
+
+    plt.ylabel('Total distinct vaccinations')
+
+    plt.show()
+
+    return None
+
+def non_distinct_plot(datesArray, total_non_distinct_vacs_Array):
+
+    plt.rcParams.update({'font.size': 8})
+
+    plt.figure(figsize=(7,7))
+
+    plt.plot(datesArray, total_non_distinct_vacs_Array)
+
+    plt.title('COVID-19 non Distinct Vaccinations | Greece')
+
+    plt.xlabel('Date')
+
+    plt.xticks(rotation=90)
+
+    plt.ylabel('Total non distinct vaccinations')
+
+    plt.show()
+
+    return None
 
 # Initialize variables
 total_distinct_vacs = 0
@@ -65,6 +107,8 @@ groups = groupby(loaded_json, lambda content: content['referencedate'])
 
 # Group data by reference date in order to iterate through areas over a single day
 for refDate, group in groups:
+
+    refDate = refDate.replace('T00:00:00', '')
     
     datesArray.append(refDate)
     
@@ -90,3 +134,9 @@ for key in loaded_json:
 print ("Total distinct vaccinations are :",total_distinct_vacs)
 
 print ("Total vaccinations are :",total_non_distinct_vacs)
+
+# Show line chart with distinct vaccinations in Greece
+distinct_plot(datesArray, total_distinct_vac_Array)
+
+# Show line chart with non distinct vaccinations in Greece
+non_distinct_plot(datesArray, total_non_distinct_vacs_Array)
